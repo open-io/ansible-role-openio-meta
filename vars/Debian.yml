@@ -1,0 +1,6 @@
+# roles/meta/vars/Debian.yml
+# Distribution-specific variables for Ubuntu, Debian, ...
+---
+meta_packages:
+  - "openio-sds={{ openio_meta_version }}"
+...

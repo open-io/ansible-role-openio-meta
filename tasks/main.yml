@@ -1,0 +1,77 @@
+# roles/meta/tasks/main.yml
+---
+- name: "Include {{ ansible_distribution }} variables"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags: install
+
+- name: Create the 'openio' group
+  group:
+    name: openio
+    gid: "{{ openio_group_openio_gid | default('220')}}"
+  tags: install
+
+- name: Create the 'openio' user
+  user:
+    name: openio
+    comment: "openio account"
+    uid: "{{ openio_user_openio_uid | default('120')}}"
+    group: openio
+  tags: install
+
+- name: "Include {{ ansible_distribution }} tasks"
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags: install
+
+- name: Test directories presence
+  stat:
+    path: "{{ item }}"
+  register: _dir
+  with_items:
+    - "/etc/gridinit.d/{{ openio_meta_namespace }}"
+    - "{{ openio_meta_sysconfig_dir }}/{{ service_type }}-{{ openio_meta_serviceid }}"
+    - "{{ openio_meta_volume }}"
+    - "/var/log/oio/sds/{{ openio_meta_namespace }}/{{ service_type }}-{{ openio_meta_serviceid }}"
+    - "/etc/oio/sds/{{ openio_meta_namespace }}/watch"
+
+- name: Ensure directories exists
+  file:
+    path: "{{ item.item }}"
+    state: directory
+    owner: openio
+    group: openio
+    mode: 0755
+    recurse: true
+  with_items: "{{ _dir.results }}"
+  when: not item.stat.exists
+  tags: install
+
+- name: Generate configuration files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: openio
+    group: openio
+    mode: 0644
+  with_items:
+    - src: "meta.conf.j2"
+      dest: "{{ openio_meta_sysconfig_dir }}/\
+        {{ service_type }}-{{ openio_meta_serviceid }}/{{ service_type }}-{{ openio_meta_serviceid }}.conf"
+    - src: "gridinit_meta.conf.j2"
+      dest: "{{ openio_meta_gridinit_dir }}/{{ service_type }}-{{ openio_meta_serviceid }}.conf"
+    - src: "watch-meta.yml.j2"
+      dest: "{{ openio_meta_sysconfig_dir }}/watch/{{ service_type }}-{{ openio_meta_serviceid }}.yml"
+  register: _meta_conf
+
+- name: restart meta
+  shell: |
+    gridinit_cmd reload
+    gridinit_cmd restart  {{openio_meta_namespace}}-{{ service_type }}-{{openio_meta_serviceid}}
+  when: _meta_conf.changed
+  tags: configure
+...

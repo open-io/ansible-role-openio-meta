@@ -1,0 +1,6 @@
+# roles/meta/vars/RedHat.yml
+# Distribution-specific variables for RHEL, CentOS, ...
+---
+meta_packages:
+  - "openio-sds-server-{{ openio_meta_version }}"
+...

@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+---
+host: {{ openio_meta_bind_address }}
+port: {{ service_port }}
+type: {{ service_type }}
+{% if openio_meta_location | ipaddr %}
+location: {{ openio_meta_location | replace(".", "-") }}
+{% else %}
+location: {{ openio_meta_location }}
+{% endif %}
+checks:
+  - {type: tcp}
+stats:
+  - {type: volume, path: {{ openio_meta_volume }}}
+  - {type: meta}
+  - {type: system}
+...

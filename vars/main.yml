@@ -1,0 +1,12 @@
+---
+openio_meta_sysconfig_dir: "/etc/oio/sds/{{ openio_meta_namespace }}"
+openio_meta_servicename: "meta-{{ openio_meta_serviceid }}"
+
+openio_meta_definition_file: >
+  "{{ openio_meta_sysconfig_dir }}/
+  {{ openio_meta_servicename }}/{{ openio_meta_servicename }}.conf"
+openio_meta_gridinit_dir: "/etc/gridinit.d/{{ openio_meta_namespace }}"
+
+service_type: "{{ openio_meta_mode_details[openio_meta_mode]['service_name'] }}"
+service_port: "{{ openio_meta_mode_details[openio_meta_mode]['port'] }}"
+...
