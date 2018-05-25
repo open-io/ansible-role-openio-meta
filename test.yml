@@ -1,0 +1,40 @@
+---
+- hosts: all
+  become: true
+  vars:
+    NS: TRAVIS
+  pre_tasks:
+    - name: Ensures namespace directory exists
+      file:
+        dest: "/etc/oio/sds.conf.d"
+        state: directory
+      tags: install
+
+    - name: Copy using the 'content' for inline data
+      copy:
+        content: |
+          [{{ NS }}]
+          # endpoints
+          conscience=172.17.0.2:6000
+          #zookeeper=172.17.0.2:6005
+          proxy=172.17.0.2:6006
+          event-agent=beanstalk://172.17.0.2:6014
+          ns.meta1_digits=3
+          udp_allowed=yes
+          ns.storage_policy=THREECOPIES
+          ns.chunk_size=10485760
+          ns.service_update_policy=meta2=KEEP|3|1|;rdir=KEEP|3|1|;
+        dest: "/etc/oio/sds.conf.d/{{ NS }}"
+  roles:
+    - role: repository
+    - role: gridinit
+      openio_gridinit_namespace: "{{ NS }}"
+    - role: oioproxy
+      openio_oioproxy_namespace: "{{ NS }}"
+    - role: role_under_test
+      openio_meta_namespace: "{{ NS }}"
+      openio_meta_mode: meta2
+      openio_meta_location: "{{ ansible_default_ipv4.address }}"
+      openio_meta_options:
+        - meta2.outgoing.timeout.common.req=42.000000
+...
