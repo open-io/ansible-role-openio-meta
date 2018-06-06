@@ -27,7 +27,7 @@ openio_meta_bind_address:
 | `openio_meta_namespace` | `"OPENIO"` | Namespace |
 | `openio_meta_options` | `[]` | Specific options |
 | `openio_meta_serviceid` | `"0"` | ID in gridinit |
-| `openio_meta_version` | `"*"` | Install a specific version |
+| `openio_meta_version` | `latest` | Install a specific version |
 | `openio_meta_volume` | `"/var/lib/oio/sds/{{ openio_meta_namespace }}/{{ service_type }}-{{ openio_meta_serviceid }}"` | Path to store data |
 
 ## Dependencies

@@ -2,5 +2,5 @@
 # Distribution-specific variables for RHEL, CentOS, ...
 ---
 meta_packages:
-  - "openio-sds-server-{{ openio_meta_version }}"
+  - "{{ 'openio-sds-server' if openio_meta_version == 'latest' else 'openio-sds-server-' ~ openio_meta_version}}"
 ...
