@@ -29,6 +29,7 @@
     - role: repository
     - role: gridinit
       openio_gridinit_namespace: "{{ NS }}"
+      openio_gridinit_per_ns: true
     - role: oioproxy
       openio_oioproxy_namespace: "{{ NS }}"
     - role: role_under_test
