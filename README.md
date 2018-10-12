@@ -13,22 +13,18 @@ An Ansible role for install and configure meta0, meta1 and meta2. Specifically, 
 
 ## Role Variables
 
-openio_meta_bind_interface: "{{ ansible_default_ipv4.alias }}"
-openio_meta_bind_address:
-  "{{ hostvars[inventory_hostname]['ansible_' + openio_meta_bind_interface]['ipv4']['address'] }}"
 
 | Variable   | Default | Comments (type)  |
 | :---       | :---    | :---             |
 | `openio_meta_bind_address` | `{{ hostvars[inventory_hostname]['ansible_' + openio_meta_bind_interface]['ipv4']['address'] }}` | Address IP to use. |
 | `openio_meta_bind_interface` | `{{ ansible_default_ipv4.alias }}` | Interface to use |
 | `openio_meta_location` | `"{{ ansible_hostname }}"` | Location |
-| `openio_meta_mode` | `meta0` | Service type to provide `[meta0, meta1, meta2]` |
-| `openio_meta_mode_details` | `dict` | Details of a service type |
+| `openio_meta_type` | `meta0` | Service type to provide `[meta0, meta1, meta2]` |
 | `openio_meta_namespace` | `"OPENIO"` | Namespace |
 | `openio_meta_options` | `[]` | Specific options |
 | `openio_meta_serviceid` | `"0"` | ID in gridinit |
 | `openio_meta_version` | `latest` | Install a specific version |
-| `openio_meta_volume` | `"/var/lib/oio/sds/{{ openio_meta_namespace }}/{{ service_type }}-{{ openio_meta_serviceid }}"` | Path to store data |
+| `openio_meta_volume` | `"/var/lib/oio/sds/{{ openio_meta_namespace }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"` | Path to store data |
 
 ## Dependencies
 
@@ -69,7 +65,7 @@ No dependencies.
       openio_gridinit_namespace: "{{ NS }}"
     - role: meta
       openio_meta_namespace: "{{ NS }}"
-      openio_meta_mode: meta2
+      openio_meta_type: meta2
       openio_meta_options:
         - meta2.outgoing.timeout.common.req=42.000000
 ```

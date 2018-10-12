@@ -34,9 +34,9 @@
   register: _dir
   with_items:
     - "/etc/gridinit.d/{{ openio_meta_namespace }}"
-    - "{{ openio_meta_sysconfig_dir }}/{{ service_type }}-{{ openio_meta_serviceid }}"
+    - "{{ openio_meta_sysconfig_dir }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"
     - "{{ openio_meta_volume }}"
-    - "/var/log/oio/sds/{{ openio_meta_namespace }}/{{ service_type }}-{{ openio_meta_serviceid }}"
+    - "/var/log/oio/sds/{{ openio_meta_namespace }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"
     - "/etc/oio/sds/{{ openio_meta_namespace }}/watch"
 
 - name: Ensure directories exists
@@ -45,7 +45,7 @@
     state: directory
     owner: openio
     group: openio
-    mode: 0755
+    mode: 0750
     recurse: true
   with_items: "{{ _dir.results }}"
   when: not item.stat.exists
@@ -57,21 +57,24 @@
     dest: "{{ item.dest }}"
     owner: openio
     group: openio
-    mode: 0644
+    mode: 0640
   with_items:
     - src: "meta.conf.j2"
       dest: "{{ openio_meta_sysconfig_dir }}/\
-        {{ service_type }}-{{ openio_meta_serviceid }}/{{ service_type }}-{{ openio_meta_serviceid }}.conf"
+        {{ openio_meta_type }}-{{ openio_meta_serviceid }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}.conf"
     - src: "gridinit_meta.conf.j2"
-      dest: "{{ openio_meta_gridinit_dir }}/{{ service_type }}-{{ openio_meta_serviceid }}.conf"
+      dest: "{{ openio_meta_gridinit_dir }}/{{ openio_meta_gridinit_file_prefix }}\
+        {{ openio_meta_type }}-{{ openio_meta_serviceid }}.conf"
     - src: "watch-meta.yml.j2"
-      dest: "{{ openio_meta_sysconfig_dir }}/watch/{{ service_type }}-{{ openio_meta_serviceid }}.yml"
+      dest: "{{ openio_meta_sysconfig_dir }}/watch/{{ openio_meta_type }}-{{ openio_meta_serviceid }}.yml"
   register: _meta_conf
 
 - name: restart meta
   shell: |
     gridinit_cmd reload
-    gridinit_cmd restart  {{openio_meta_namespace}}-{{ service_type }}-{{openio_meta_serviceid}}
-  when: _meta_conf.changed
+    gridinit_cmd restart  {{openio_meta_namespace}}-{{ openio_meta_type }}-{{openio_meta_serviceid}}
+  when:
+    - _meta_conf.changed
+    - not openio_meta_provision_only
   tags: configure
 ...
