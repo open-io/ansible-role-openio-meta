@@ -3,4 +3,5 @@
 ---
 meta_packages:
   - "{{ 'openio-sds' if openio_meta_version == 'latest' else 'openio-sds=' ~ openio_meta_version }}"
+syslog_user: syslog
 ...

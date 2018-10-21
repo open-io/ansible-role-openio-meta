@@ -36,7 +36,6 @@
     - "/etc/gridinit.d/{{ openio_meta_namespace }}"
     - "{{ openio_meta_sysconfig_dir }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"
     - "{{ openio_meta_volume }}"
-    - "/var/log/oio/sds/{{ openio_meta_namespace }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"
     - "/etc/oio/sds/{{ openio_meta_namespace }}/watch"
 
 - name: Ensure directories exists
@@ -49,6 +48,16 @@
     recurse: true
   with_items: "{{ _dir.results }}"
   when: not item.stat.exists
+  tags: install
+
+- name: Ensure log directory
+  file:
+    path: "/var/log/oio/sds/{{ openio_meta_namespace }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"
+    state: directory
+    owner: "{{ syslog_user }}"
+    group: openio
+    mode: 0750
+    recurse: true
   tags: install
 
 - name: Generate configuration files
