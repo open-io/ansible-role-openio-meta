@@ -37,29 +37,9 @@ No dependencies.
   become: true
   vars:
     NS: OIO
-  pre_tasks:
-    - name: Ensures namespace directory exists
-      file:
-        dest: "/etc/oio/sds.conf.d"
-        state: directory
-      tags: install
 
-    - name: Copy using the 'content' for inline data
-      copy:
-        content: |
-          [{{ NS }}]
-          # endpoints
-          conscience=172.17.0.2:6000
-          #zookeeper=172.17.0.2:6005
-          proxy=172.17.0.2:6006
-          event-agent=beanstalk://172.17.0.2:6014
-          ns.meta1_digits=3
-          udp_allowed=yes
-          ns.storage_policy=THREECOPIES
-          ns.chunk_size=10485760
-          ns.service_update_policy=meta2=KEEP|3|1|;rdir=KEEP|3|1|;
-        dest: "/etc/oio/sds.conf.d/{{ NS }}"
   roles:
+    - role: users
     - role: repository
     - role: gridinit
       openio_gridinit_namespace: "{{ NS }}"
