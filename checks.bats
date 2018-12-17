@@ -6,7 +6,7 @@
 # Tests
 
 @test 'Request stats throught the oioproxy' {
-  run bash -c "curl http://172.17.0.2:6006/v3.0/forward/stats?id=172.17.0.2:6003"
+  run bash -c "curl http://172.17.0.2:6006/v3.0/forward/stats?id=172.17.0.2:6001"
   echo "output: "$output
   echo "status: "$status
   [[ "${status}" -eq "0" ]]

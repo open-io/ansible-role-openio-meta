@@ -161,7 +161,7 @@ run_galaxy_install() {
 }
 
 run_idempotence_test() {
-  log 'Running idempotence test' 
+  log 'Running idempotence test'
   local output
   output="$(mktemp)"
 
@@ -200,4 +200,3 @@ log() {
 #}}}
 
 main "${@}"
-
