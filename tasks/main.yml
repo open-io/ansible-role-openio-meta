@@ -20,7 +20,7 @@
     state: directory
     owner: "{{ item.owner | default('openio') }}"
     group: "{{ item.group | default('openio') }}"
-    mode: "{{ item.mode | default(0750) }}"
+    mode: "{{ item.mode | default(0755) }}"
   with_items:
     - path: "/etc/gridinit.d/{{ openio_meta_namespace }}"
     - path: "{{ openio_meta_sysconfig_dir }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"
@@ -28,6 +28,7 @@
     - path: "/etc/oio/sds/{{ openio_meta_namespace }}/watch"
     - path: "/var/log/oio/sds/{{ openio_meta_namespace }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"
       owner: "{{ syslog_user }}"
+      mode: "0750"
   tags: install
 
 - name: Generate configuration files
