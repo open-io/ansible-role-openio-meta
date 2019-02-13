@@ -14,4 +14,6 @@ stats:
   - {type: volume, path: {{ openio_meta_volume }}}
   - {type: meta}
   - {type: system}
+slots:
+  {{ openio_meta_slots | to_nice_yaml | indent(2) }}
 ...

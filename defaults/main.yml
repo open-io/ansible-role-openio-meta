@@ -32,4 +32,8 @@ openio_meta_gridinit_file_prefix: ""
 #   meta2:
 #     port: 6021
 #     service_name: meta2
+openio_meta_slots:
+  "{{ [ openio_meta_type, openio_meta_type ~ '-' ~ openio_meta_location.split('.')[:-2] | join('-') ] \
+  if openio_meta_location.split('.') | length > 2 \
+  else [ openio_meta_type ] }}"
 ...
