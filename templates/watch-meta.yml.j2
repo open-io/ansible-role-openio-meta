@@ -9,7 +9,7 @@ location: {{ openio_meta_location | replace(".", "-") }}
 location: {{ openio_meta_location }}
 {% endif %}
 checks:
-  - {type: tcp}
+  - {type: asn1}
 stats:
   - {type: volume, path: {{ openio_meta_volume }}}
   - {type: meta}
