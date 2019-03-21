@@ -1,15 +1,16 @@
 # roles/meta/defaults/main.yml
 ---
-openio_meta_namespace: "OPENIO"
-openio_meta_serviceid: "0"
+openio_meta_namespace: "{{ namespace | default('OPENIO') }}"
+openio_meta_serviceid: "{{ 0 + openio_legacy_serviceid | d(0) | int }}"
 
 openio_meta_version: 'latest'
 
 openio_meta_type: meta0
 
 openio_meta_bind_interface: "{{ ansible_default_ipv4.alias }}"
-openio_meta_bind_address:
-  "{{ hostvars[inventory_hostname]['ansible_' + openio_meta_bind_interface]['ipv4']['address'] }}"
+openio_meta_bind_address: "{{ openio_bind_address \
+  | default(hostvars[inventory_hostname]['ansible_' + openio_meta_bind_interface]['ipv4']['address']) }}"
+
 openio_meta_bind_port: 6001
 
 openio_meta_volume: "/var/lib/oio/sds/{{ openio_meta_namespace }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"
@@ -17,7 +18,8 @@ openio_meta_volume: "/var/lib/oio/sds/{{ openio_meta_namespace }}/{{ openio_meta
 openio_meta_options: []
 #  - meta0.outgoing.timeout.common.req=10.000000
 
-openio_meta_location: "{{ ansible_hostname }}.{{ openio_meta_serviceid }}"
+openio_meta_location: "{{ openio_location_room | default ('') }}{{ openio_location_rack | default ('') }}\
+  {{ openio_location_server | default (ansible_hostname ~ '.') }}{{ openio_meta_serviceid }}"
 openio_meta_provision_only: false
 
 openio_meta_gridinit_dir: "/etc/gridinit.d/{{ openio_meta_namespace }}"
