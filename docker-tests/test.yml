@@ -1,0 +1,35 @@
+---
+- hosts: all
+  become: true
+  vars:
+    NS: TRAVIS
+
+  roles:
+    - role: users
+    - role: repository
+      openio_repository_no_log: false
+      openio_repository_products:
+        sds:
+          release: "18.10"
+    - role: namespace
+      openio_namespace_name: "{{ NS }}"
+      openio_namespace_conscience_url: "{{ ansible_default_ipv4.address }}:6000"
+      openio_namespace_zookeeper_url: ""
+      openio_namespace_oioprxy_url: "{{ ansible_default_ipv4.address }}:6006"
+      openio_namespace_event_agent_url: "beanstalk://{{ ansible_default_ipv4.address }}:6014"
+      openio_namespace_ecd_url: "{{ ansible_default_ipv4.address }}:6017"
+      openio_namespace_meta1_digits: 2
+      openio_namespace_storage_policy: "THREECOPIES"
+    - role: gridinit
+      openio_gridinit_namespace: "{{ NS }}"
+      openio_gridinit_per_ns: true
+    - role: oioproxy
+      openio_oioproxy_namespace: "{{ NS }}"
+
+    - role: role_under_test
+      openio_meta_namespace: "{{ NS }}"
+      openio_meta_location: "{{ ansible_default_ipv4.address }}"
+      openio_meta_type: meta2
+      openio_meta_options:
+        - meta2.outgoing.timeout.common.req=42.000000
+...
