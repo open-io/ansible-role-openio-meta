@@ -49,12 +49,36 @@
       dest: "{{ openio_meta_sysconfig_dir }}/watch/{{ openio_meta_type }}-{{ openio_meta_serviceid }}.yml"
   register: _meta_conf
 
-- name: restart meta
+- name: "restart meta to apply the new configuration"
   shell: |
     gridinit_cmd reload
     gridinit_cmd restart  {{openio_meta_namespace}}-{{ openio_meta_type }}-{{openio_meta_serviceid}}
+  register: _restart_meta
   when:
-    - _meta_conf.changed
+    - _meta_conf is changed
     - not openio_meta_provision_only
   tags: configure
+
+- block:
+    - name: "Ensure meta is started"
+      command: gridinit_cmd start {{ openio_meta_namespace }}-{{ openio_meta_servicename }}
+      register: _start_meta
+      changed_when: '"Success" in _start_meta.stdout'
+      when:
+        - not openio_meta_provision_only
+        - _restart_meta is skipped
+      tags: configure
+
+    - name: check meta
+      command: "oio-tool ping {{ openio_meta_bind_address }}:{{ openio_meta_bind_port }}"
+      register: _meta_check
+      retries: 3
+      delay: 5
+      until: _meta_check is success
+      changed_when: false
+      failed_when:
+        - _meta_check.rc != 0
+        - "'PING OK' not in _meta_check.stdout"
+  when: openio_bootstrap | d(false)
+
 ...
