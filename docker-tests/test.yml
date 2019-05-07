@@ -3,14 +3,15 @@
   become: true
   vars:
     NS: TRAVIS
-
+    openio_bootstrap: true
   roles:
     - role: users
     - role: repository
       openio_repository_no_log: false
-      openio_repository_products:
-        sds:
-          release: "18.10"
+      openio_repository_mirror_host: mirror2.openio.io
+    - role: gridinit
+      openio_gridinit_namespace: "{{ NS }}"
+      openio_gridinit_per_ns: true
     - role: namespace
       openio_namespace_name: "{{ NS }}"
       openio_namespace_conscience_url: "{{ ansible_default_ipv4.address }}:6000"
@@ -20,9 +21,6 @@
       openio_namespace_ecd_url: "{{ ansible_default_ipv4.address }}:6017"
       openio_namespace_meta1_digits: 2
       openio_namespace_storage_policy: "THREECOPIES"
-    - role: gridinit
-      openio_gridinit_namespace: "{{ NS }}"
-      openio_gridinit_per_ns: true
     - role: oioproxy
       openio_oioproxy_namespace: "{{ NS }}"
 
