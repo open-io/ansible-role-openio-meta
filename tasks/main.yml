@@ -79,6 +79,7 @@
       failed_when:
         - _meta_check.rc != 0
         - "'PING OK' not in _meta_check.stdout"
+      when: openio_meta_type != 'meta1'
   when: openio_bootstrap | d(false)
 
 ...
