@@ -5,7 +5,9 @@
   with_first_found:
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
-  tags: install
+  tags:
+    - install
+    - configure
 
 - name: "Include {{ ansible_distribution }} tasks"
   include_tasks: "{{ item }}"
@@ -29,7 +31,7 @@
     - path: "/var/log/oio/sds/{{ openio_meta_namespace }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}"
       owner: "{{ syslog_user }}"
       mode: "0750"
-  tags: install
+  tags: configure
 
 - name: Generate configuration files
   template:
@@ -48,6 +50,7 @@
     - src: "watch-meta.yml.j2"
       dest: "{{ openio_meta_sysconfig_dir }}/watch/{{ openio_meta_type }}-{{ openio_meta_serviceid }}.yml"
   register: _meta_conf
+  tags: configure
 
 - name: "restart meta to apply the new configuration"
   shell: |
@@ -76,10 +79,10 @@
       delay: 5
       until: _meta_check is success
       changed_when: false
+      tags: configure
       failed_when:
         - _meta_check.rc != 0
         - "'PING OK' not in _meta_check.stdout"
       when: openio_meta_type != 'meta1'
   when: openio_bootstrap | d(false)
-
 ...
