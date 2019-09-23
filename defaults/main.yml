@@ -21,6 +21,8 @@ openio_meta_options: []
 openio_meta_location: "{{ openio_location_room | default ('') }}{{ openio_location_rack | default ('') }}\
   {{ openio_location_server | default (ansible_hostname ~ '.') }}{{ openio_meta_serviceid }}"
 openio_meta_provision_only: false
+openio_meta_package_upgrade: "{{ openio_package_upgrade | d(false) }}"
+
 
 openio_meta_gridinit_dir: "/etc/gridinit.d/{{ openio_meta_namespace }}"
 openio_meta_gridinit_file_prefix: ""
