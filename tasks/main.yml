@@ -75,8 +75,8 @@
     - name: check meta
       command: "oio-tool ping {{ openio_meta_bind_address }}:{{ openio_meta_bind_port }}"
       register: _meta_check
-      retries: 30
-      delay: 0.5
+      retries: 15
+      delay: 1
       until: _meta_check is success
       changed_when: false
       tags: configure
