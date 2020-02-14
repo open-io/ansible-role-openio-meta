@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 [Service.{{ openio_meta_namespace }}-{{ openio_meta_type }}-{{ openio_meta_serviceid }}]
-command=/usr/bin/oio-{{ openio_meta_type }}-server -p /run/oio/sds/{{ openio_meta_namespace }}-{{ openio_meta_type }}-{{ openio_meta_serviceid }}.pid -s OIO,{{ openio_meta_namespace }},{{ openio_meta_type }},{{ openio_meta_serviceid }} -O Endpoint={{ openio_meta_bind_address }}:{{ openio_meta_bind_port }}  -O Config=/etc/oio/sds/{{ openio_meta_namespace }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}.conf {{ openio_meta_namespace }} {{ openio_meta_volume }}
+command=/usr/bin/oio-{{ openio_meta_type }}-server -p /run/oio/sds/{{ openio_meta_namespace }}-{{ openio_meta_type }}-{{ openio_meta_serviceid }}.pid -s OIO,{{ openio_meta_namespace }},{{ openio_meta_type }},{{ openio_meta_serviceid }} -O Endpoint={{ openio_meta_bind_address }}:{{ openio_meta_bind_port }}  -O Config={{ openio_meta_sysconfig_dir }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}/{{ openio_meta_type }}-{{ openio_meta_serviceid }}.conf {{ openio_meta_namespace }} {{ openio_meta_volume }}
 enabled=true
 start_at_boot=true
 on_die=respawn
