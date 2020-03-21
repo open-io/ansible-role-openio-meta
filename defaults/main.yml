@@ -19,22 +19,13 @@ openio_meta_options: []
 
 openio_meta_location: "{{ openio_location_room | default ('') }}{{ openio_location_rack | default ('') }}\
   {{ openio_location_server | default (ansible_hostname ~ '.') }}{{ openio_meta_serviceid }}"
-openio_meta_provision_only: false
+openio_meta_provision_only: "{{ openio_maintenance_mode | d(false) | bool }}"
 openio_meta_package_upgrade: "{{ openio_package_upgrade | d(false) }}"
 
 
-openio_meta_gridinit_dir: "/etc/gridinit.d/{{ openio_meta_namespace }}"
-openio_meta_gridinit_file_prefix: ""
-# openio_meta_mode_details:
-#   meta0:
-#     port: 6001
-#     service_name: meta0
-#   meta1:
-#     port: 6011
-#     service_name: meta1
-#   meta2:
-#     port: 6021
-#     service_name: meta2
+openio_meta_gridinit_dir: "{{ openio_gridinit_d | d('/etc/gridinit.d/') }}"
+openio_meta_gridinit_file_prefix: "{{ openio_meta_namespace }}-"
+
 openio_meta_slots:
   "{{ [ openio_meta_type, openio_meta_type ~ '-' ~ openio_meta_location.split('.')[:-2] | join('-') ] \
   if openio_meta_location.split('.') | length > 2 \
