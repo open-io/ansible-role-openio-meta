@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/open-io/ansible-role-openio-meta.svg?branch=master)](https://travis-ci.org/open-io/ansible-role-openio-meta)
+[![Build Status](https://travis-ci.org/open-io/ansible-role-openio-meta.svg?branch=20.04)](https://travis-ci.org/open-io/ansible-role-openio-meta)
 # Ansible role `meta`
 
 An Ansible role for install and configure meta0, meta1 and meta2. Specifically, the responsibilities of this role are to:

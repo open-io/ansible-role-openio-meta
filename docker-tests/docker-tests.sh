@@ -23,12 +23,14 @@ IFS=$'\t\n'   # Split on newlines and tabs (but not on spaces)
 
 readonly container_id="$(mktemp)"
 readonly role_dir='/etc/ansible/roles/role_under_test'
+readonly meta="${role_dir}/meta/main.yml"
 if [ "$#" -ne 1 ]; then
     readonly test_playbook="${role_dir}/docker-tests/test.yml"
 else
     readonly test_playbook="${role_dir}/docker-tests/$1.yml"
 fi
 readonly requirements="${role_dir}/docker-tests/requirements.yml"
+readonly meta_requirements="/tmp/meta_requirements.yml"
 
 readonly docker_image="cdelgehier/docker_images_ansible"
 readonly image_tag="${docker_image}:${ANSIBLE_VERSION}_${DISTRIBUTION}_${VERSION}"
@@ -67,7 +69,7 @@ configure_environment() {
     'centos_6')
       run_opts+=('--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro')
       ;;
-    'centos_7'|'fedora_25')
+    'centos_8'|'centos_7'|'fedora_25')
       init=/usr/lib/systemd/systemd
       run_opts+=('--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro')
       ;;
@@ -79,7 +81,7 @@ configure_environment() {
       fi
       ;;
     'ubuntu_18.04'|'ubuntu_16.04'|'debian_8')
-      run_opts=('--volume=/run' '--volume=/run/lock' '--volume=/tmp' '--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro' '--cap-add=SYS_ADMIN' '--cap-add=SYS_RESOURCE')
+      run_opts=('--volume=/run' '--volume=/run/lock' '--volume=/tmp' '--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro' '--cap-add=NET_ADMIN' '--cap-add=SYS_ADMIN' '--cap-add=SYS_RESOURCE')
 
       #if [ -x '/usr/sbin/getenforce' ]; then
       #  run_opts+=('--volume=/sys/fs/selinux:/sys/fs/selinux:ro')
@@ -105,9 +107,15 @@ start_container() {
   docker run --detach \
     "${run_opts[@]}" \
     --volume="${PWD}:${role_dir}:ro" \
+    -e IPVAGRANT=${IPVAGRANT:=""} \
+    -e USR=${USR:=""} \
+    -e PASS=${PASS:=""} \
     "${image_tag}" \
     "${init}" \
     > "${container_id}"
+  # Create an additional network to perform tests on
+  docker network create net2 --driver bridge || true
+  docker network connect net2 $(cat ${container_id})
   set +x
 }
 
@@ -157,6 +165,8 @@ run_test_playbook() {
 run_galaxy_install() {
   log "Running ansible-galaxy install"
   exec_container ansible-galaxy install -r "${requirements}"
+  exec_container /bin/bash -c "yq -y .dependencies ${meta} > ${meta_requirements} || true"
+  exec_container /bin/bash -c "if [ -s ${meta_requirements} ]; then ansible-galaxy install -r ${meta_requirements}; else true; fi"
   log "Requirements installed"
 }
 
