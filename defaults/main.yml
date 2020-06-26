@@ -6,7 +6,7 @@ openio_meta_version: 'latest'
 
 openio_meta_type: meta0
 
-openio_meta_bind_interface: "{{ ansible_default_ipv4.alias }}"
+openio_meta_bind_interface: "{{ openio_bind_interface | d(ansible_default_ipv4.alias) }}"
 openio_meta_bind_address: "{{ openio_bind_address \
   | default(hostvars[inventory_hostname]['ansible_' + openio_meta_bind_interface]['ipv4']['address']) }}"
 
